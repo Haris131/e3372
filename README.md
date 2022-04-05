@@ -1,3 +1,8 @@
+# Install
+```
+bash -c "$(curl -sko - 'https://raw.githubusercontent.com/Haris131/e3372/main/install')"
+```
+
 # Menu
 <p align="center">
   <img src="https://github.com/Haris131/e3372/raw/main/img/IMG_20220406_014153.jpg" alt="Menu Modem"/>
