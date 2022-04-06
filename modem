@@ -163,7 +163,9 @@ while true; do
 done
 }
 info(){
- ipmodem=$(ip r|grep default|awk '{print $3}'|grep 192.168)
+ clear
+ read -p "IP MODEM : " ipmodem
+ clear
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
@@ -210,9 +212,11 @@ info(){
 }
 iphunter(){
 pilih
+clear
+read -p "IP MODEM : " ipmodem
+clear
 while true; do
  echo -e "#############################"
- ipmodem=$(ip r|grep default|awk '{print $3}'|grep 192.168)
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
@@ -325,7 +329,9 @@ while true; do
 done
 }
 restart() {
- ipmodem=$(ip r|grep default|awk '{print $3}'|grep 192.168)
+ clear
+ read -p "IP MODEM : " ipmodem
+ clear
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
@@ -347,8 +353,9 @@ restart() {
 
 lock() {
 clear
-echo -e "#############################"
 read -p "IP MODEM : " ipmodem
+clear
+echo -e "#############################"
 echo -e "Connecting to $ipmodem"
 sleep 1
 adb kill-server > /dev/null 2>&1
@@ -434,7 +441,7 @@ dlfreqx2=$(echo $dlfreqx|cut -b 5-6)
 
 adb push balong-nvtool / > /dev/null 2>&1
 adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
-adb shell "/balong-nvtool -m 53810:03:00:00:00:$bandx1:01:$bandx1:01:$pcix1:$pcix2:$dlfreq1:$dlfreq2:00:00:00:00 > /dev/null 2>&1"
+adb shell "/balong-nvtool -m 53810:03:00:00:00:$bandx1:01:$bandx1:01:$pcix1:$pcix2:$dlfreqx1:$dlfreqx2:00:00:00:00 > /dev/null 2>&1"
 echo -e "Finish Locking Cell ID..."
 sleep 1
 #echo -e "Rebooting..."
@@ -458,8 +465,9 @@ echo -e "#############################"
 
 unlock() {
 clear
-echo -e "#############################"
 read -p "IP MODEM : " ipmodem
+clear
+echo -e "#############################"
 echo -e "Connecting to $ipmodem"
 sleep 1
 adb kill-server > /dev/null 2>&1
