@@ -164,12 +164,19 @@ done
 }
 info(){
  clear
- read -p "IP MODEM : " ipmodem
+ ipmodem=$(route -n|awk '{print $2}'|grep 192.168|head -n1)
  clear
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
-  echo -e "IP Modem Tidak Ditemukan";exit
+  echo -e "IP Modem Tidak Ditemukan"
+  read -p "IP MODEM : " ipmodem
+  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+   echo -n ""
+  else
+   echo -e "IP Modem Tidak Ditemukan"
+   exit
+  fi
  fi
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
@@ -213,15 +220,22 @@ info(){
 iphunter(){
 pilih
 clear
-read -p "IP MODEM : " ipmodem
+ipmodem=$(route -n|awk '{print $2}'|grep 192.168|head -n1)
 clear
-while true; do
- echo -e "#############################"
+if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+ echo -n ""
+else
+ echo -e "IP Modem Tidak Ditemukan"
+ read -p "IP MODEM : " ipmodem
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
-  echo -e "IP Modem Tidak Ditemukan";exit
+  echo -e "IP Modem Tidak Ditemukan"
+  exit
  fi
+fi
+while true; do
+ echo -e "#############################"
  # OFF Data Modem
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
@@ -330,12 +344,19 @@ done
 }
 restart() {
  clear
- read -p "IP MODEM : " ipmodem
+ ipmodem=$(route -n|awk '{print $2}'|grep 192.168|head -n1)
  clear
  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo -n ""
  else
-  echo -e "IP Modem Tidak Ditemukan";exit
+  echo -e "IP Modem Tidak Ditemukan"
+  read -p "IP MODEM : " ipmodem
+  if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+   echo -n ""
+  else
+   echo -e "IP Modem Tidak Ditemukan"
+   exit
+  fi
  fi
  # cookie
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
@@ -353,8 +374,20 @@ restart() {
 
 lock() {
 clear
-read -p "IP MODEM : " ipmodem
+ipmodem=$(route -n|awk '{print $2}'|grep 192.168|head -n1)
 clear
+if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+ echo -n ""
+else
+ echo -e "IP Modem Tidak Ditemukan"
+ read -p "IP MODEM : " ipmodem
+ if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo -n ""
+ else
+  echo -e "IP Modem Tidak Ditemukan"
+  exit
+ fi
+fi
 echo -e "#############################"
 echo -e "Connecting to $ipmodem"
 sleep 1
@@ -465,8 +498,20 @@ echo -e "#############################"
 
 unlock() {
 clear
-read -p "IP MODEM : " ipmodem
+ipmodem=$(route -n|awk '{print $2}'|grep 192.168|head -n1)
 clear
+if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+ echo -n ""
+else
+ echo -e "IP Modem Tidak Ditemukan"
+ read -p "IP MODEM : " ipmodem
+ if [[ $ipmodem =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo -n ""
+ else
+  echo -e "IP Modem Tidak Ditemukan"
+  exit
+ fi
+fi
 echo -e "#############################"
 echo -e "Connecting to $ipmodem"
 sleep 1
