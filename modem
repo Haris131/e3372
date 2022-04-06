@@ -346,6 +346,8 @@ restart() {
 }
 
 lock() {
+clear
+echo -e "#############################"
 read -p "IP MODEM : " ipmodem
 echo -e "Connecting to $ipmodem"
 sleep 1
@@ -361,13 +363,13 @@ else
   sleep 1
   echo -e "Press enter to back in menu..."
   read
-  menu
+  lock
 fi
-
+echo -e "#############################"
 read -p "BAND : " band
 read -p "PCI : " pci
 read -p "DL Frequency : " dlf
-# Band
+echo -e "#############################"
 bandx=$(printf "%x" $band)
 if [ "${#bandx}" = "1" ]; then
   bandx="0$bandx"
@@ -377,7 +379,7 @@ else
   echo $bandx
   exit
 fi
-# PCI
+
 pcix=$(printf "%x" $pci)
 if [ "${#pcix}" = "1" ]; then
  pcix="000$pcix"
@@ -390,7 +392,7 @@ else
 fi
 pcix1=$(echo $pcix|cut -b 3-4)
 pcix2=$(echo $pcix|cut -b 1-2)
-# DL Frequency
+
 dlfreq=$(printf "%x" $dlf)
 if [ "${#dlfreq}" = "1" ]; then
  dlfreq="000$dlfreq"
@@ -409,18 +411,33 @@ adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
 adb shell "/balong-nvtool -m 53810:03:00:00:00:$bandx:01:$bandx:01:$pcix1:$pcix2:$dlfreq1:$dlfreq2:00:00:00:00 > /dev/null 2>&1"
 echo -e "Finish Locking Cell ID..."
 sleep 1
-echo -e "Rebooting..."
-adb shell "atc AT^RESET > /dev/null 2>&1"
+#echo -e "Rebooting..."
+#adb shell "atc AT^RESET > /dev/null 2>&1"
+# cookie
+data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
+sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
+token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
+# restart modem
+res=$(curl -s -X POST http://$ipmodem/api/device/control -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "Origin: http://$ipmodem" -H "X-Requested-With: XMLHttpRequest" -H "__RequestVerificationToken: $token" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi" -d '<?xml version="1.0" encoding="UTF-8"?><request><Control>1</Control></request>')
+ress=$(echo $res|awk -F "<response>" '{print $2}'|awk -F "</response>" '{print $1}')
+if [ "$ress" = "OK" ]; then
+  echo -e "Rebooting..."
+else
+  echo -e "Reboot Error"
+fi
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
+echo -e "#############################"
 }
 
 unlock() {
+clear
+echo -e "#############################"
 read -p "IP MODEM : " ipmodem
 echo -e "Connecting to $ipmodem"
 sleep 1
 adb kill-server > /dev/null 2>&1
-adb connect "$ipmodem"
+adb connect "$ipmodem" > /dev/null 2>&1
 sleep 2
 cek=$(adb devices -l|grep 192.168.7.1:5555|awk -F ":" '{print $1}')
 if [ "$cek" = "$ipmodem" ]; then
@@ -431,17 +448,31 @@ else
   sleep 1
   echo -e "Press enter to back in menu..."
   read
-  menu
+  unlock
 fi
+echo -e "#############################"
 adb push balong-nvtool / > /dev/null 2>&1
 adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
 adb shell "/balong-nvtool -m 53810:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00 > /dev/null 2>&1"
 echo -e "Finish Unlocking Cell ID..."
 sleep 1
-echo -e "Rebooting..."
-adb shell "atc AT^RESET > /dev/null 2>&1"
+#echo -e "Rebooting..."
+#adb shell "atc AT^RESET > /dev/null 2>&"
+# cookie
+data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
+sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
+token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
+# restart modem
+res=$(curl -s -X POST http://$ipmodem/api/device/control -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "Origin: http://$ipmodem" -H "X-Requested-With: XMLHttpRequest" -H "__RequestVerificationToken: $token" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi" -d '<?xml version="1.0" encoding="UTF-8"?><request><Control>1</Control></request>')
+ress=$(echo $res|awk -F "<response>" '{print $2}'|awk -F "</response>" '{print $1}')
+if [ "$ress" = "OK" ]; then
+  echo -e "Rebooting..."
+else
+  echo -e "Reboot Error"
+fi
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
+echo -e "#############################"
 }
 
 if [ $(opkg list-installed|grep adb|awk 'NR==1'|awk '{print $1}') != "adb" ]; then
