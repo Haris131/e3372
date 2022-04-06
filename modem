@@ -354,7 +354,7 @@ sleep 1
 adb kill-server > /dev/null 2>&1
 adb connect "$ipmodem" > /dev/null 2>&1
 sleep 2
-cek=$(adb devices -l|grep 192.168.7.1:5555|awk -F ":" '{print $1}')
+cek=$(adb devices -l|grep $ipmodem:5555|awk -F ":" '{print $1}')
 if [ "$cek" = "$ipmodem" ]; then
   echo -e "Device connected!"
   sleep 1
@@ -439,7 +439,7 @@ sleep 1
 adb kill-server > /dev/null 2>&1
 adb connect "$ipmodem" > /dev/null 2>&1
 sleep 2
-cek=$(adb devices -l|grep 192.168.7.1:5555|awk -F ":" '{print $1}')
+cek=$(adb devices -l|grep $ipmodem:5555|awk -F ":" '{print $1}')
 if [ "$cek" = "$ipmodem" ]; then
   echo -e "Device connected!"
   sleep 1
