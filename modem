@@ -164,7 +164,10 @@ done
 }
 ipmod(){
 while true; do
-    read -p "IP MODEM Auto or Manual (y/n) ? " yn
+    echo -e "---- Menu ----"
+    echo -e "Y or y : Auto Detect IP Modem"
+    echo -e "N or n : Manual Input IP Modem"
+    read -p "Enter Choice : " yn
     clear
     case $yn in
         [Yy]* )
@@ -199,7 +202,7 @@ info(){
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
  token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
- echo -e "#############################"
+ echo -e "---------------------------"
  oper=$(curl -s http://$ipmodem/api/net/current-plmn -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
  operator=$(echo $oper|awk -F "<FullName>" '{print $2}'|awk -F "</FullName>" '{print $1}')
  echo -e "Operator : $operator"
@@ -220,7 +223,7 @@ info(){
  tdd=$(echo $td|awk -F "<TotalDownload>" '{print $2}'|awk -F "</TotalDownload>" '{print $1}'|human_print)
  echo -e "Total Upload : $tup"
  echo -e "Total Download : $tdd"
- echo -e "#############################"
+ echo -e "---------------------------"
  par=$(curl -s http://$ipmodem/config/deviceinformation/add_param.xml -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
  band=$(echo $par|awk -F "<band>" '{print $2}'|awk -F "</band>" '{print $1}')
  dlfreq=$(echo $par|awk -F "<freq1>" '{print $2}'|awk -F "</freq1>" '{print $1}')
@@ -233,7 +236,7 @@ info(){
  echo -e "Cell ID : $cellid"
  echo -e "DL Frequency : $dlfreq"
  echo -e "UP Frequency : $upfreq"
- echo -e "#############################"
+ echo -e "---------------------------"
 }
 iphunter(){
 pilih
@@ -241,7 +244,7 @@ clear
 ipmod
 clear
 while true; do
- echo -e "#############################"
+ echo -e "---------------------------"
  # OFF Data Modem
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
@@ -291,7 +294,7 @@ while true; do
  son=$(echo $on|awk -F "<response>" '{print $2}'|awk -F "</response>" '{print $1}')
  echo "Connecting ... $son"
  sleep 2
- echo -e "#############################"
+ echo -e "---------------------------"
  oper=$(curl -s http://$ipmodem/api/net/current-plmn -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
  operator=$(echo $oper|awk -F "<FullName>" '{print $2}'|awk -F "</FullName>" '{print $1}')
  echo -ne "Operator : $operator"
@@ -315,7 +318,7 @@ while true; do
  tdd=$(echo $td|awk -F "<TotalDownload>" '{print $2}'|awk -F "</TotalDownload>" '{print $1}'|human_print)
  echo -e "Total Upload : $tup"
  echo -e "Total Download : $tdd"
- echo -e "#############################"
+ echo -e "---------------------------"
  par=$(curl -s http://$ipmodem/config/deviceinformation/add_param.xml -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
  band=$(echo $par|awk -F "<band>" '{print $2}'|awk -F "</band>" '{print $1}')
  dlfreq=$(echo $par|awk -F "<freq1>" '{print $2}'|awk -F "</freq1>" '{print $1}')
@@ -328,7 +331,7 @@ while true; do
  echo -e "Cell ID : $cellid"
  echo -e "DL Frequency : $dlfreq"
  echo -e "UP Frequency : $upfreq"
- echo -e "#############################"
+ echo -e "---------------------------"
  # IP Hunter or Manual
  case $yn in
   [Yy]* )
@@ -369,7 +372,7 @@ lock() {
 clear
 ipmod
 clear
-echo -e "#############################"
+echo -e "---------------------------"
 echo -e "Connecting to $ipmodem"
 sleep 1
 adb kill-server > /dev/null 2>&1
@@ -386,11 +389,11 @@ else
   read
   lock
 fi
-echo -e "#############################"
+echo -e "---------------------------"
 read -p "BAND : " band
 read -p "PCI : " pci
 read -p "DL Frequency : " dlfreq
-echo -e "#############################"
+echo -e "---------------------------"
 bandx=$(printf "%X" $band)
 if [ "${#bandx}" = "8" ]; then
   bandx="$bandx"
@@ -471,13 +474,13 @@ else
 fi
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
-echo -e "#############################"
+echo -e "---------------------------"
 }
 unlock() {
 clear
 ipmod
 clear
-echo -e "#############################"
+echo -e "---------------------------"
 echo -e "Connecting to $ipmodem"
 sleep 1
 adb kill-server > /dev/null 2>&1
@@ -494,7 +497,7 @@ else
   read
   unlock
 fi
-echo -e "#############################"
+echo -e "---------------------------"
 adb push balong-nvtool / > /dev/null 2>&1
 adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
 adb shell "/balong-nvtool -m 53810:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00 > /dev/null 2>&1"
@@ -516,7 +519,7 @@ else
 fi
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
-echo -e "#############################"
+echo -e "---------------------------"
 }
 if [ $(opkg list-installed|grep adb|awk 'NR==1'|awk '{print $1}') != "adb" ]; then
   opkg update && opkg install adb
