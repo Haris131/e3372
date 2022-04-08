@@ -458,10 +458,10 @@ adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
 adb shell "/balong-nvtool -m 53810:03:00:00:00:$bandx1:01:$bandx1:01:$pcix1:$pcix2:$dlfreqx1:$dlfreqx2:00:00:00:00 > /dev/null 2>&1"
 echo -e "Finish Locking Cell ID..."
 sleep 1
-exit
-#echo -e "Rebooting..."
-#adb shell "atc AT^RESET > /dev/null 2>&1"
-restart
+echo -e "Rebooting..."
+screen -dmS res adb shell "atc AT^RESET > /dev/null 2>&1"
+sleep 2
+kill $(screen -list|grep res|awk -F '[.]' '{print $1}') > /dev/null 2>&1
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
 echo -e "---------------------------"
@@ -472,17 +472,17 @@ ipmod
 clear
 echo -e "---------------------------"
 echo -e "Connecting to $ipmodem"
-sleep 1
+sleep 2
 adb kill-server > /dev/null 2>&1
 adb connect "$ipmodem" > /dev/null 2>&1
 sleep 2
 cek=$(adb devices -l|grep $ipmodem:5555|awk -F ":" '{print $1}')
 if [ "$cek" = "$ipmodem" ]; then
   echo -e "Device connected!"
-  sleep 1
+  sleep 2
 else
   echo -e "Device not connected!"
-  sleep 1
+  sleep 2
   echo -e "Press enter to back in menu..."
   read
   unlock
@@ -492,16 +492,21 @@ adb push balong-nvtool / > /dev/null 2>&1
 adb shell chmod 777 /balong-nvtool > /dev/null 2>&1
 adb shell "/balong-nvtool -m 53810:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00:00 > /dev/null 2>&1"
 echo -e "Finish Unlocking Cell ID..."
-sleep 1
-#echo -e "Rebooting..."
-#adb shell "atc AT^RESET > /dev/null 2>&"
-restart
+sleep 2
+echo -e "Rebooting..."
+screen -dmS res adb shell "atc AT^RESET > /dev/null 2>&1"
+sleep 2
+kill $(screen -list|grep res|awk -F '[.]' '{print $1}') > /dev/null 2>&1
 adb kill-server > /dev/null 2>&1
 echo -e "Closing..."
 echo -e "---------------------------"
 }
 if [ $(opkg list-installed|grep adb|awk 'NR==1'|awk '{print $1}') != "adb" ]; then
   opkg update && opkg install adb
+  clear
+fi
+if [ -f $(opkg list-installed|grep screen|awk '{print $1}') ]; then
+  opkg update && opkg install screen
   clear
 fi
 case $1 in
