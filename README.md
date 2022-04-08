@@ -19,5 +19,19 @@ bash -c "$(curl -sko - 'https://raw.githubusercontent.com/Haris131/e3372/main/in
   <br>
 </p>
 
+# Lock Cell ID
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Haris131/e3372/main/img/lock_cell_id.jpg" alt="Lock Cell ID"/>
+  <br>
+  <br>
+</p>
+
+# Unlock Cell ID
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Haris131/e3372/main/img/unlock_cell_id.jpg" alt="Modem Info"/>
+  <br>
+  <br>
+</p>
+
 # Tested
  * E3372H - 607 (Hilink)
