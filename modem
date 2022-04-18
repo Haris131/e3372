@@ -135,9 +135,9 @@ esac
 }
 pilih(){
 while true; do
-    read -p "Mode IP Hunter or Manual (y/n) ? " yn
+    read -p "Mode IP Hunter or Manual (y/n) ? " ymn
     clear
-    case $yn in
+    case $ymn in
         [Yy]* )
         read -p "IP Hunter (ex: 10.22;10.11) : " cari
         c=0
@@ -164,10 +164,17 @@ done
 }
 ipmod(){
 while true; do
-    echo -e "---- Menu ----"
-    echo -e "Y or y : Auto Detect IP Modem"
-    echo -e "N or n : Manual Input IP Modem"
-    read -p "Enter Choice : " yn
+    case $1 in
+        [Yy]* )
+        yn="y"
+        ;;
+        * )
+        echo -e "---- Menu ----"
+        echo -e "Y or y : Auto Detect IP Modem"
+        echo -e "N or n : Manual Input IP Modem"
+        read -p "Enter Choice : " yn
+        ;;
+    esac
     clear
     case $yn in
         [Yy]* )
@@ -197,7 +204,7 @@ done
 }
 info(){
  clear
- ipmod
+ ipmod $1
  clear
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
@@ -333,7 +340,7 @@ while true; do
  echo -e "UP Frequency : $upfreq"
  echo -e "---------------------------"
  # IP Hunter or Manual
- case $yn in
+ case $ymn in
   [Yy]* )
   c=0
   while [[ $c -le $(echo $cari|awk -F ";" '{print NF-1}') ]]; do
@@ -511,7 +518,7 @@ if [ -f $(opkg list-installed|grep screen|awk '{print $1}') ]; then
 fi
 case $1 in
  "info")
- info;exit
+ info $2;exit
  ;;
  "iphunter")
  iphunter;exit
