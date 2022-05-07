@@ -153,6 +153,10 @@ while true; do
         break
         ;;
         [Nn]* )
+#        read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
+        list="104.26.4.10;zoomappdocs.zoom.us;172.67.73.39;lms.uin-antasari.ac.id"
+#        read -p "Masukkan Secret Openclash: " auth
+        auth="reyre"
         break
         ;;
         * )
@@ -201,6 +205,123 @@ while true; do
         ;;
     esac
 done
+}
+bughunter(){
+c=0
+while [[ $c -le $(echo $list|awk -F ";" '{print NF-1}') ]]; do
+  bug=$(echo $list|awk -F ";" -v x=$(($c+1)) '{print $x}')
+  cek=$(curl -m10 -s --interface eth1 -I --insecure $bug|grep Server|cut -d' ' -f2-2)
+  if [ $(echo $cek|grep cloudflare) ]; then
+    echo -e "Bug $bug = $cek"
+    ms=$(timeout 10 ping -c 1 -I eth1 $bug|awk "NR==2"|awk -F 'time=' '{print $2}'|awk -F. '{print $1}')
+    if [ -f $ms ]; then
+      ms=999999
+    fi
+    echo -e "Ping: $ms ms"
+    if [ $c = "0" ]; then
+      echo $ms > /tmp/pingbug
+      echo $bug > /tmp/bugping
+    else
+      echo $ms >> /tmp/pingbug
+      echo $bug >> /tmp/bugping
+    fi
+  fi
+ ((c++))
+done
+satu=$(cat /tmp/pingbug|awk "NR==1")
+dua=$(cat /tmp/pingbug|awk "NR==2")
+tiga=$(cat /tmp/pingbug|awk "NR==3")
+empat=$(cat /tmp/pingbug|awk "NR==4")
+lima=$(cat /tmp/pingbug|awk "NR==5")
+enam=$(cat /tmp/pingbug|awk "NR==6")
+tujuh=$(cat /tmp/pingbug|awk "NR==7")
+delapan=$(cat /tmp/pingbug|awk "NR==8")
+sembilan=$(cat /tmp/pingbug|awk "NR==9")
+sepuluh=$(cat /tmp/pingbug|awk "NR==10")
+if [ $satu -lt $dua ]; then
+  ms=$satu;bug=$(cat /tmp/bugping|awk "NR==1")
+else
+  ms=$dua;bug=$(cat /tmp/bugping|awk "NR==2")
+fi
+if [ $tiga ]; then
+  if [ $tiga -lt $ms ]; then
+    ms=$tiga;bug=$(cat /tmp/bugping|awk "NR==3")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $empat ]; then
+  if [ $empat -lt $ms ]; then
+    ms=$empat;bug=$(cat /tmp/bugping|awk "NR==4")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $lima ]; then
+  if [ $lima -lt $ms ]; then
+    ms=$lima;bug=$(cat /tmp/bugping|awk "NR==5")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $enam ]; then
+  if [ $enam -lt $ms ]; then
+    ms=$enam;bug=$(cat /tmp/bugping|awk "NR==6")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $tujuh ]; then
+  if [ $tujuh -lt $ms ]; then
+    ms=$tujuh;bug=$(cat /tmp/bugping|awk "NR==7")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $delapan ]; then
+  if [ $delapan -lt $ms ]; then
+    ms=$delapan;bug=$(cat /tmp/bugping|awk "NR==8")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $sembilan ]; then
+  if [ $sembilan -lt $ms ]; then
+    ms=$sembilan;bug=$(cat /tmp/bugping|awk "NR==9")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+if [ $sepuluh ]; then
+  if [ $sepuluh -lt $ms ]; then
+    ms=$sepuluh;bug=$(cat /tmp/bugping|awk "NR==10")
+  else
+    ms=$ms;bug=$bug
+  fi
+fi
+echo -e "---------------------------"
+if [ $ms ]; then
+  echo "IP Ditemukan : $ipp";
+  echo "Bug: $bug dipilih"
+  echo "Ping: $ms ms"
+  find=$(cat /etc/openclash/proxy_provider/universal.yaml | grep "server: " |awk '{print $2}'|head -n1)
+  sed -i "s/server: $find/server: $bug/g" /etc/openclash/proxy_provider/universal.yaml
+  sleep 1
+  upd=$(curl -s http://0.0.0.0:9090/proxies -H "Host: 0.0.0.0:9090" -H "Connection: keep-alive" -H "Authorization: Bearer $auth" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/json" -H "Accept: */*" -H "Origin: http://0.0.0.0" -H "Referer: http://0.0.0.0/" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: id,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6")
+  ate=$(curl -s http://0.0.0.0:9090/providers/proxies -H "Host: 0.0.0.0:9090" -H "Connection: keep-alive" -H "Authorization: Bearer $auth" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/json" -H "Accept: */*" -H "Origin: http://0.0.0.0" -H "Referer: http://0.0.0.0/" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: id,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6")
+  co=$(echo $ate|awk -F ':\\{"name":"' '{print NF}')
+  for ((i=0;i<$co;i++)); do
+    tt=$(echo $ate|awk -F '\\{"name":"' -v a=$i '{print $a}'|awk -F '","proxies"' '{print $1}')
+    if [ -f $(echo $tt|grep '"') ]; then
+      upe=$(curl -X PUT -s http://0.0.0.0:9090/providers/proxies/$tt -H "Host: 0.0.0.0:9090" -H "Connection: keep-alive" -H "Authorization: Bearer $auth" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/json" -H "Accept: */*" -H "Origin: http://0.0.0.0" -H "Referer: http://0.0.0.0/" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: id,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6" -w "%{http_code}")
+      sleep 1
+      health=$(curl -X OPTIONS -s http://0.0.0.0:9090/providers/proxies/$tt/healthcheck -H "Host: 0.0.0.0:9090" -H "Connection: keep-alive" -H "Accept: */*" -H "Access-Control-Request-Method: GET" -H "Access-Control-Request-Headers: authorization,content-type" -H "Origin: http://0.0.0.0" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Sec-Fetch-Mode: cors" -H "Referer: http://0.0.0.0/" -H "Accept-Encoding: gzip, deflate" -H "Accept-Language: id,en-US;q=0.9,en;q=0.8,zh-CN;q=0.7,zh;q=0.6" -w "%{http_code}")
+      sleep 1
+    fi
+  done
+  echo -e "---------------------------"
+  exit
+fi
 }
 info(){
  clear
@@ -252,13 +373,6 @@ ipmod
 clear
 while true; do
  echo -e "---------------------------"
- # OFF Data Modem
- data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
- sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
- token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
- off=$(curl -s -X POST http://$ipmodem/api/dialup/mobile-dataswitch -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Content-Length: 83" -H "Accept: */*" -H "Origin: http://$ipmodem" -H "X-Requested-With: XMLHttpRequest" -H "__RequestVerificationToken: $token" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi" -d "<request><dataswitch>0</dataswitch></request>")
- sof=$(echo $off|awk -F "<response>" '{print $2}'|awk -F "</response>" '{print $1}')
- echo -e "Disconnecting ... $sof"
  # Ganti Mode Jaringan 4G Only or Auto
  data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
  sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
@@ -293,14 +407,6 @@ while true; do
   ;;
  esac
  sleep 1
- # ON Data Modem
- data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo)
- sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
- token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
- on=$(curl -s -X POST http://$ipmodem/api/dialup/mobile-dataswitch -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Content-Length: 83" -H "Accept: */*" -H "Origin: http://$ipmodem" -H "X-Requested-With: XMLHttpRequest" -H "__RequestVerificationToken: $token" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Content-Type: application/x-www-form-urlencoded; charset=UTF-8" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi" -d "<request><dataswitch>1</dataswitch></request>")
- son=$(echo $on|awk -F "<response>" '{print $2}'|awk -F "</response>" '{print $1}')
- echo "Connecting ... $son"
- sleep 2
  echo -e "---------------------------"
  oper=$(curl -s http://$ipmodem/api/net/current-plmn -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
  operator=$(echo $oper|awk -F "<FullName>" '{print $2}'|awk -F "</FullName>" '{print $1}')
@@ -313,31 +419,6 @@ while true; do
  tp=$(echo $ip|awk -F "<DeviceName>" '{print $2}'|awk -F "</DeviceName>" '{print $1}')
  echo -e "Device : $tp"
  echo -e "Wan IP : $ipp"
- dns=$(curl -s http://$ipmodem/api/monitoring/status -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
- dns1=$(echo $dns|awk -F "<PrimaryDns>" '{print $2}'|awk -F "</PrimaryDns>" '{print $1}')
- dns2=$(echo $dns|awk -F "<SecondaryDns>" '{print $2}'|awk -F "</SecondaryDns>" '{print $1}')
- net=$(echo $dns|awk -F "<CurrentNetworkTypeEx>" '{print $2}'|awk -F "</CurrentNetworkTypeEx>" '{print $1}')
- echo -e "DNS 1 : $dns1"
- echo -e "DNS 2 : $dns2"
- echo -ne "Network : ";network $net
- td=$(curl -s http://$ipmodem/api/monitoring/traffic-statistics -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
- tup=$(echo $td|awk -F "<TotalUpload>" '{print $2}'|awk -F "</TotalUpload>" '{print $1}'|human_print)
- tdd=$(echo $td|awk -F "<TotalDownload>" '{print $2}'|awk -F "</TotalDownload>" '{print $1}'|human_print)
- echo -e "Total Upload : $tup"
- echo -e "Total Download : $tdd"
- echo -e "---------------------------"
- par=$(curl -s http://$ipmodem/config/deviceinformation/add_param.xml -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
- band=$(echo $par|awk -F "<band>" '{print $2}'|awk -F "</band>" '{print $1}')
- dlfreq=$(echo $par|awk -F "<freq1>" '{print $2}'|awk -F "</freq1>" '{print $1}')
- upfreq=$(echo $par|awk -F "<freq2>" '{print $2}'|awk -F "</freq2>" '{print $1}')
- echo -e "Band : $band"
- dvi=$(curl -s http://$ipmodem/api/device/signal -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7" -H "Cookie: $sesi")
- pci=$(echo $dvi|awk -F "<pci>" '{print $2}'|awk -F "</pci>" '{print $1}')
- cellid=$(echo $dvi|awk -F "<cell_id>" '{print $2}'|awk -F "</cell_id>" '{print $1}')
- echo -e "PCI : $pci"
- echo -e "Cell ID : $cellid"
- echo -e "DL Frequency : $dlfreq"
- echo -e "UP Frequency : $upfreq"
  echo -e "---------------------------"
  # IP Hunter or Manual
  case $ymn in
@@ -352,7 +433,8 @@ while true; do
   done
   ;;
   [Nn]* )
-  echo -e "";echo -n "Reconnect Lagi (PRESS ENTER) !? ";read x
+  bughunter
+  #echo -e "";echo -n "Reconnect Lagi (PRESS ENTER) !? ";read x
   ;;
  esac
  sleep 2
