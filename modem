@@ -153,10 +153,9 @@ while true; do
         break
         ;;
         [Nn]* )
-#        read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
-        list="104.26.4.10;zoomappdocs.zoom.us;172.67.73.39;lms.uin-antasari.ac.id"
-#        read -p "Masukkan Secret Openclash: " auth
-        auth="reyre"
+        read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
+        read -p "Masukkan Secret Openclash: " auth
+        read -p "Masukkan Interface Modem (ex: eth1): interf
         break
         ;;
         * )
@@ -210,10 +209,10 @@ bughunter(){
 c=0
 while [[ $c -le $(echo $list|awk -F ";" '{print NF-1}') ]]; do
   bug=$(echo $list|awk -F ";" -v x=$(($c+1)) '{print $x}')
-  cek=$(curl -m10 -s --interface eth1 -I --insecure $bug|grep Server|cut -d' ' -f2-2)
+  cek=$(curl -m10 -s --interface $interf -I --insecure $bug|grep Server|cut -d' ' -f2-2)
   if [ $(echo $cek|grep cloudflare) ]; then
     echo -e "Bug $bug = $cek"
-    ms=$(timeout 10 ping -c 1 -I eth1 $bug|awk "NR==2"|awk -F 'time=' '{print $2}'|awk -F. '{print $1}')
+    ms=$(timeout 10 ping -c 1 -I $interf $bug|awk "NR==2"|awk -F 'time=' '{print $2}'|awk -F. '{print $1}')
     if [ -f $ms ]; then
       ms=999999
     fi
