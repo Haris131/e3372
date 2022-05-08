@@ -155,7 +155,7 @@ while true; do
         [Nn]* )
         read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
         read -p "Masukkan Secret Openclash: " auth
-        read -p "Masukkan Interface Modem (ex: eth1): interf
+        read -p "Masukkan Interface Modem (ex: eth1): " interf
         break
         ;;
         * )
