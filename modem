@@ -153,10 +153,8 @@ while true; do
         break
         ;;
         [Nn]* )
-#        read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
-        list="104.26.4.10;zoomappdocs.zoom.us;172.67.73.39;lms.uin-antasari.ac.id"
-#        read -p "Masukkan Secret Openclash: " auth
-        auth="reyre"
+        read -p "Masukkan Bug (ex: bug1;bug2;bug3 max 10 bug): " list
+        read -p "Masukkan Secret Openclash: " auth
         break
         ;;
         * )
@@ -325,8 +323,7 @@ fi
 }
 login(){
 echo -e "---------------------------"
-pass="admin"
-#read -p "Password Login: " pass
+read -p "Password Login: " pass
 data=$(curl -s http://$ipmodem/api/webserver/SesTokInfo -H "Host: $ipmodem" -H "Connection: keep-alive" -H "Accept: */*" -H "X-Requested-With: XMLHttpRequest" -H "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.119 Safari/537.36" -H "Referer: http://$ipmodem/html/home.html" -H "Accept-Encoding: gzib, deflate" -H "Accept-Language: id-ID,id;q=0.9,en-US;q=0.8,en;q=0.7")
 sesi=$(echo "$data" | grep "SessionID=" | cut -b 10-147)
 token=$(echo "$data" | grep "TokInfo" | cut -b 10-41)
